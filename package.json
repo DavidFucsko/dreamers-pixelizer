@@ -1,20 +1,17 @@
 {
-  "name": "electron-quick-start-typescript",
+  "name": "dreamers-electron-typescript",
   "version": "1.0.0",
   "description": "A minimal Electron application written with Typescript",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "prestart": "copyfiles --flat src/app/views/templates/*.html dist/app/views/templates",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "start": "npm run build && electron ./dist/main.js"
+    "start": "npm run build && electron ./dist/app.js"
   },
   "repository": "https://github.com/electron/electron-quick-start-typescript",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo",
     "typescript"
   ],
   "author": "GitHub",
@@ -23,5 +20,8 @@
     "electron": "^9.0.4",
     "tslint": "^6.1.2",
     "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "copyfiles": "^2.3.0"
   }
 }

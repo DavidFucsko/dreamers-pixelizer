@@ -1,15 +1,9 @@
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// No Node.js APIs are available in this process unless
-// nodeIntegration is set to true in webPreferences.
-// Use preload.js to selectively enable features
-// needed in the renderer process.
+import { IpcService } from '../../services/ipc.service';
+import { RendererInterface } from '../../interfaces/renderer.interface';
 
-import { IpcService } from './app/ipc.service';
+export class MainWindowRenderer implements RendererInterface {
 
-export class ImageRenderer {
-
-    public render() {
+    public render(): void {
         const ipc = new IpcService();
 
         const parentElement = document.createElement('div');
@@ -22,6 +16,10 @@ export class ImageRenderer {
             const response = await ipc.send<{ file: string }>('dreamers:open-file');
 
             imageContainer.src = "data:image/png;base64," + response.file;
+
+            // tslint:disable-next-line: no-console
+            console.log(imageContainer.src);
+
         });
         parentElement.appendChild(button);
         parentElement.appendChild(imageContainer);
@@ -29,4 +27,4 @@ export class ImageRenderer {
         document.body.appendChild(parentElement);
     }
 }
-(new ImageRenderer().render());
+(new MainWindowRenderer().render());

@@ -1,6 +1,6 @@
-import { IpcChannelInterface } from './ipc-channel.interface';
-import { IpcMainEvent, remote, dialog } from 'electron';
-import { IpcRequest } from './ipc-request';
+import { IpcChannelInterface } from '../ipc/ipc-channel.interface';
+import { IpcMainEvent, dialog } from 'electron';
+import { IpcRequest } from '../ipc/ipc-request';
 import * as fs from 'fs';
 
 export class FileOpenChannel implements IpcChannelInterface {
