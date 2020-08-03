@@ -2,15 +2,19 @@ import * as path from "path";
 
 import { BrowserWindow } from 'electron';
 
-import { WindowInterface } from '../interfaces/window.interface';
-import { RendererInterface } from '../interfaces/renderer.interface';
+import { WindowInterface } from '../abstracts/interfaces/window.interface';
 
 export class MainWindow implements WindowInterface {
     private window: BrowserWindow;
+    private windowOptions: Electron.BrowserWindowConstructorOptions;
+    private viewPath: string;
 
-    private renderer: RendererInterface;
+    constructor(windowOptions: Electron.BrowserWindowConstructorOptions, viewPath: string) {
+        this.windowOptions = windowOptions;
+        this.viewPath = viewPath;
+    }
 
-    private static defaultOptions = {
+    private static defaultOptions: Electron.BrowserWindowConstructorOptions = {
         height: 600,
         width: 800,
         title: `Dreamers`,
@@ -27,19 +31,22 @@ export class MainWindow implements WindowInterface {
         return this.window;
     }
 
-    public registerRenderer(renderer: RendererInterface) {
-        this.renderer = renderer;
-        const window = this.getWindow();
-        window.loadFile(renderer.getViewPath());
+    public setViewPath(newPath: string) {
+        this.viewPath = newPath;
     }
 
-    public renderWindowView() {
-        this.renderer.render();
+    public loadView(): void {
+        this.getWindow().loadFile(this.viewPath);
     }
 
-    private createWindow(options: Electron.BrowserWindowConstructorOptions): BrowserWindow {
-        const newWindow = new BrowserWindow(options);
+    public createWindow(options: Electron.BrowserWindowConstructorOptions): BrowserWindow {
+        const newWindow = new BrowserWindow({ ...options, ...this.windowOptions });
         newWindow.webContents.openDevTools();
+        this.window = newWindow;
         return newWindow;
+    }
+
+    public getDefaultOptions() {
+        return MainWindow.defaultOptions;
     }
 }

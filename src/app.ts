@@ -1,10 +1,10 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 import { IpcChannelInterface } from './electron/ipc/ipc-channel.interface';
 import { FileOpenChannel } from './electron/channels/file-open-channel';
-import { WindowInterface } from './app/interfaces/window.interface';
+import { WindowInterface } from './app/abstracts/interfaces/window.interface';
 import { WindowService } from './app/services/window.service';
 import { MainWindow } from './app/windows/main.window';
-import { MainWindowRenderer } from './app/views/renderers/main';
+import { MainRenderer } from './app/views/renderers/main.renderer';
 
 class Main {
   private registeredWindows: WindowInterface[];
@@ -17,7 +17,6 @@ class Main {
   public init(ipcChannels: IpcChannelInterface[], windowsToRegister: WindowInterface[]) {
     app.on('ready', this.registerWindows.bind(this, windowsToRegister));
     app.on('window-all-closed', this.onWindowAllClosed);
-    app.on('activate', this.onActivate);
 
     this.registerIpcChannels(ipcChannels);
   }
@@ -28,18 +27,11 @@ class Main {
     }
   }
 
-  private onActivate() {
-    if (!this.registeredWindows.length) {
-      this.registerWindows([new MainWindow()]);
-    }
-
-    this.registeredWindows[0].registerRenderer(new MainWindowRenderer());
-    this.registeredWindows[0].renderWindowView();
-  }
-
   private registerWindows(windowsToRegister: WindowInterface[]) {
     this.windowService.registerWindows(windowsToRegister);
     this.registeredWindows = this.windowService.getWindows();
+    this.windowService.createWindows();
+    this.windowService.loadViews();
   }
 
   private registerIpcChannels(ipcChannels: IpcChannelInterface[]) {
@@ -48,4 +40,4 @@ class Main {
 }
 
 // Here we go!
-(new Main()).init([new FileOpenChannel()], [new MainWindow()]);
+(new Main()).init([new FileOpenChannel()], [new MainWindow({}, MainRenderer.getViewPath())]);
