@@ -1,11 +1,10 @@
 import { IpcService } from '../../services/ipc.service';
 import { RendererBaseClass } from '../../abstracts/classes/renderer.base';
 import * as path from "path";
-import { TestRenderer } from './test.renderer';
 
-export class MainRenderer implements RendererBaseClass {
+export class TestRenderer implements RendererBaseClass {
 
-    private static viewPath = '../templates/main.html';
+    private static viewPath = '../templates/test.html';
 
     public render(): void {
         const ipc = new IpcService();
@@ -14,10 +13,16 @@ export class MainRenderer implements RendererBaseClass {
         const button = document.createElement('button');
         const imageContainer = document.createElement('img');
 
-        button.innerHTML = "Open another template";
-        button.id = "open-template";
+        button.innerHTML = "Open image";
+        button.id = "open-image";
         button.addEventListener('click', async () => {
-            ipc.send<{}>('dreamers:change-template', { params: [TestRenderer.getViewPath()] });
+            const response = await ipc.send<{ file: string }>('dreamers:open-file');
+
+            imageContainer.src = "data:image/png;base64," + response.file;
+
+            // tslint:disable-next-line: no-console
+            console.log(imageContainer.src);
+
         });
         parentElement.appendChild(button);
         parentElement.appendChild(imageContainer);
@@ -26,6 +31,6 @@ export class MainRenderer implements RendererBaseClass {
     }
 
     public static getViewPath(): string {
-        return path.join(__dirname, MainRenderer.viewPath);
+        return path.join(__dirname, TestRenderer.viewPath);
     }
 }

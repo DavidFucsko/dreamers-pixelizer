@@ -1,10 +1,11 @@
 import { app, ipcMain } from 'electron';
 import { IpcChannelInterface } from './electron/ipc/ipc-channel.interface';
-import { FileOpenChannel } from './electron/channels/file-open-channel';
+import { FileOpenChannel } from './electron/channels/file-open.channel';
 import { WindowInterface } from './app/abstracts/interfaces/window.interface';
 import { WindowService } from './app/services/window.service';
 import { MainWindow } from './app/windows/main.window';
 import { MainRenderer } from './app/views/renderers/main.renderer';
+import { TemplateChangeChannel } from './electron/channels/template-change.channel';
 
 class Main {
   private registeredWindows: WindowInterface[];
@@ -40,4 +41,6 @@ class Main {
 }
 
 // Here we go!
-(new Main()).init([new FileOpenChannel()], [new MainWindow({}, MainRenderer.getViewPath())]);
+(new Main()).init([
+  new FileOpenChannel(),
+  new TemplateChangeChannel()], [new MainWindow({}, MainRenderer.getViewPath())]);
