@@ -4,9 +4,10 @@ import { FileOpenChannel } from './electron/channels/file-open-channel';
 import { WindowInterface } from './app/interfaces/window.interface';
 import { WindowService } from './app/services/window.service';
 import { MainWindow } from './app/windows/main.window';
+import { MainWindowRenderer } from './app/views/renderers/main';
 
 class Main {
-  private registeredWindows: BrowserWindow[];
+  private registeredWindows: WindowInterface[];
   private windowService: WindowService;
 
   constructor() {
@@ -31,6 +32,9 @@ class Main {
     if (!this.registeredWindows.length) {
       this.registerWindows([new MainWindow()]);
     }
+
+    this.registeredWindows[0].registerRenderer(new MainWindowRenderer());
+    this.registeredWindows[0].renderWindowView();
   }
 
   private registerWindows(windowsToRegister: WindowInterface[]) {

@@ -3,9 +3,12 @@ import * as path from "path";
 import { BrowserWindow } from 'electron';
 
 import { WindowInterface } from '../interfaces/window.interface';
+import { RendererInterface } from '../interfaces/renderer.interface';
 
 export class MainWindow implements WindowInterface {
     private window: BrowserWindow;
+
+    private renderer: RendererInterface;
 
     private static defaultOptions = {
         height: 600,
@@ -17,8 +20,6 @@ export class MainWindow implements WindowInterface {
         }
     };
 
-    private static windowView = '../views/templates/main.html';
-
     public getWindow(): BrowserWindow {
         if (!this.window) {
             this.window = this.createWindow(MainWindow.defaultOptions);
@@ -26,11 +27,19 @@ export class MainWindow implements WindowInterface {
         return this.window;
     }
 
+    public registerRenderer(renderer: RendererInterface) {
+        this.renderer = renderer;
+        const window = this.getWindow();
+        window.loadFile(renderer.getViewPath());
+    }
+
+    public renderWindowView() {
+        this.renderer.render();
+    }
+
     private createWindow(options: Electron.BrowserWindowConstructorOptions): BrowserWindow {
         const newWindow = new BrowserWindow(options);
         newWindow.webContents.openDevTools();
-        newWindow.loadFile(path.join(__dirname, MainWindow.windowView));
-
         return newWindow;
     }
 }
