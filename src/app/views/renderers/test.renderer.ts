@@ -1,7 +1,10 @@
 import { IpcService } from '../../services/ipc.service';
-import { RendererInterface } from '../../interfaces/renderer.interface';
+import { RendererBaseClass } from '../../abstracts/classes/renderer.base';
+import * as path from "path";
 
-export class MainWindowRenderer implements RendererInterface {
+export class TestRenderer implements RendererBaseClass {
+
+    private static viewPath = '../templates/test.html';
 
     public render(): void {
         const ipc = new IpcService();
@@ -26,5 +29,8 @@ export class MainWindowRenderer implements RendererInterface {
 
         document.body.appendChild(parentElement);
     }
+
+    public static getViewPath(): string {
+        return path.join(__dirname, TestRenderer.viewPath);
+    }
 }
-(new MainWindowRenderer().render());

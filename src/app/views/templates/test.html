@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'sha256-hCMvYsSyClH85oppOnpjyKenQgfluGqocEg7u2J3oC0='; img-src data:" />
+    <meta
+        http-equiv="X-Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'" />
+</head>
+
+<body>
+    <!-- You can also require other files to run in this process -->
+    <script>
+        renderer = require('../renderers/test.renderer.js');
+        new renderer.TestRenderer().render();
+    </script>
+</body>
+
+</html>
