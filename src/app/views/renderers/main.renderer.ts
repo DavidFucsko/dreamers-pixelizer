@@ -1,6 +1,7 @@
 import { IpcService } from '../../services/ipc.service';
 import { RendererBaseClass } from '../../abstracts/classes/renderer.base';
 import { DefaulColors } from '../parts/default-colors.part';
+import { ImageDrawer } from '../parts/image-drawer.part';
 
 export class MainRenderer extends RendererBaseClass {
 
@@ -13,21 +14,20 @@ export class MainRenderer extends RendererBaseClass {
 
         const parentElement = document.createElement('div');
         const button = document.createElement('button');
-        const imageContainer = document.createElement('img');
+        const imageContainer = new ImageDrawer(parentElement);
 
         button.innerHTML = "Open image";
         button.id = "open-image";
         button.addEventListener('click', async () => {
             const response = await ipc.send<{ file: string }>('dreamers:open-file');
 
-            imageContainer.src = "data:image/png;base64," + response.file;
+            imageContainer.setImageSrc(response.file);
 
             // tslint:disable-next-line: no-console
-            console.log(imageContainer.src);
+            console.log(imageContainer.getImageSrc());
 
         });
         parentElement.appendChild(button);
-        parentElement.appendChild(imageContainer);
 
         document.body.appendChild(parentElement);
     }

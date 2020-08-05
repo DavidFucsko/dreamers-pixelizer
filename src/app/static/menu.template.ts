@@ -1,4 +1,5 @@
 import { Menu, MenuItem, BrowserWindow, app } from 'electron';
+import { openFileDialog } from '../../common/file-open.handler';
 
 const isMac = process.platform === 'darwin'
 
@@ -25,8 +26,9 @@ const template = [
                 label: 'Open Image',
                 accelerator: 'CommandOrControl+N',
                 click(item: MenuItem, focusedWindow: BrowserWindow) {
-                    console.log(focusedWindow);
-                    if (focusedWindow) focusedWindow.webContents.send('dreamers:open-file');
+                    openFileDialog().then(result => {
+                        if (focusedWindow) focusedWindow.webContents.send('dreamers:show-image', result);
+                    });
                 }
             },
             { type: 'separator' as const },

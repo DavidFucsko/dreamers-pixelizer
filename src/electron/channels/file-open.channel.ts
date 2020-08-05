@@ -1,7 +1,7 @@
 import { IpcChannelInterface } from '../ipc/ipc-channel.interface';
-import { IpcMainEvent, dialog } from 'electron';
+import { IpcMainEvent } from 'electron';
 import { IpcRequest } from '../ipc/ipc-request';
-import * as fs from 'fs';
+import { openFileDialog } from '../../common/file-open.handler';
 
 export class FileOpenChannel implements IpcChannelInterface {
     getName() {
@@ -12,16 +12,8 @@ export class FileOpenChannel implements IpcChannelInterface {
         if (!request.responseChannel) {
             request.responseChannel = `${this.getName()}_response`;
         }
-
-        const fileSelect = dialog.showOpenDialog({
-            filters: [{ name: 'Images', extensions: ['png', 'jpg'] }]
+        openFileDialog().then(response => {
+            event.sender.send(request.responseChannel, { file: response.file });
         });
-
-        fileSelect.then(({ canceled, filePaths, bookmarks }) => {
-            const base64 = fs.readFileSync(filePaths[0]).toString('base64');
-
-            event.sender.send(request.responseChannel, { file: base64 })
-        });
-
     }
 }
