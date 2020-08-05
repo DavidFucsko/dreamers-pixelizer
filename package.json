@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "prestart": "copyfiles --flat src/app/views/templates/*.html dist/app/views/templates",
+    "prestart": "copyfiles --flat src/app/views/templates/*.html dist/app/views/templates && copyfiles --flat src/app/views/styles/*.css dist/app/views/styles",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "start": "npm run build && electron ./dist/app.js"
   },

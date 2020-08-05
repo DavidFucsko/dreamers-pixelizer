@@ -3,30 +3,36 @@ import * as path from "path";
 import { BrowserWindow } from 'electron';
 
 import { WindowInterface } from '../abstracts/interfaces/window.interface';
+import { WindowService } from '../services/window.service';
 
 export class MainWindow implements WindowInterface {
     private window: BrowserWindow;
     private windowOptions: Electron.BrowserWindowConstructorOptions;
     private viewPath: string;
+    private windowService: WindowService;
+    private static windowId: string = 'main';
+
+    private static defaultOptions: Electron.BrowserWindowConstructorOptions = {
+        width: 800,
+        height: 600,
+        title: `Dreamers`,
+        backgroundColor: '#1E1E1E',
+        webPreferences: {
+            nodeIntegration: true, // makes it possible to use `require` within our index.html
+            preload: path.join(path.dirname(require.main.filename), "preload.js")
+        },
+        show: false
+    };
 
     constructor(windowOptions: Electron.BrowserWindowConstructorOptions, viewPath: string) {
         this.windowOptions = windowOptions;
         this.viewPath = viewPath;
+        this.windowService = WindowService.getWindowService();
     }
-
-    private static defaultOptions: Electron.BrowserWindowConstructorOptions = {
-        height: 600,
-        width: 800,
-        title: `Dreamers`,
-        webPreferences: {
-            nodeIntegration: true, // makes it possible to use `require` within our index.html
-            preload: path.join(path.dirname(require.main.filename), "preload.js"),
-        }
-    };
 
     public getWindow(): BrowserWindow {
         if (!this.window) {
-            this.window = this.createWindow(MainWindow.defaultOptions);
+            this.createWindow(MainWindow.defaultOptions);
         }
         return this.window;
     }
@@ -39,14 +45,27 @@ export class MainWindow implements WindowInterface {
         this.getWindow().loadFile(this.viewPath);
     }
 
-    public createWindow(options: Electron.BrowserWindowConstructorOptions): BrowserWindow {
-        const newWindow = new BrowserWindow({ ...options, ...this.windowOptions });
-        newWindow.webContents.openDevTools();
-        this.window = newWindow;
-        return newWindow;
+    public createWindow(options: Electron.BrowserWindowConstructorOptions): void {
+        this.window = new BrowserWindow({ ...options, ...this.windowOptions });
+        this.subscribeForReadyToShow();
     }
 
     public getDefaultOptions() {
         return MainWindow.defaultOptions;
+    }
+
+    public destroyWindow() {
+        this.getWindow().destroy();
+    }
+
+    public getWindowId() {
+        return MainWindow.windowId;
+    }
+
+    private subscribeForReadyToShow(): void {
+        this.getWindow().on('ready-to-show', () => {
+            this.windowService.destroyBrowserWindow('splash');
+            this.getWindow().show();
+        });
     }
 }

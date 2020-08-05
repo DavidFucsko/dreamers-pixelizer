@@ -1,4 +1,4 @@
-import { app, ipcMain } from 'electron';
+import { app, ipcMain, Menu } from 'electron';
 import { IpcChannelInterface } from './electron/ipc/ipc-channel.interface';
 import { FileOpenChannel } from './electron/channels/file-open.channel';
 import { WindowInterface } from './app/abstracts/interfaces/window.interface';
@@ -6,17 +6,19 @@ import { WindowService } from './app/services/window.service';
 import { MainWindow } from './app/windows/main.window';
 import { MainRenderer } from './app/views/renderers/main.renderer';
 import { TemplateChangeChannel } from './electron/channels/template-change.channel';
+import { menu } from './app/static/menu.template';
+import { SplashWindow } from './app/windows/splash.window';
 
 class Main {
   private registeredWindows: WindowInterface[];
   private windowService: WindowService;
 
   constructor() {
-    this.windowService = new WindowService();
+    this.windowService = WindowService.getWindowService();
   }
 
-  public init(ipcChannels: IpcChannelInterface[], windowsToRegister: WindowInterface[]) {
-    app.on('ready', this.registerWindows.bind(this, windowsToRegister));
+  public init(ipcChannels: IpcChannelInterface[], windows: WindowInterface[]) {
+    app.on('ready', this.initialize.bind(this, windows));
     app.on('window-all-closed', this.onWindowAllClosed);
 
     this.registerIpcChannels(ipcChannels);
@@ -28,11 +30,20 @@ class Main {
     }
   }
 
+  private initialize(windowsToRegister: WindowInterface[]) {
+    this.registerWindows(windowsToRegister);
+    this.registerMenu();
+  }
+
   private registerWindows(windowsToRegister: WindowInterface[]) {
     this.windowService.registerWindows(windowsToRegister);
     this.registeredWindows = this.windowService.getWindows();
-    this.windowService.createWindows();
+    this.windowService.createBrowserWindows();
     this.windowService.loadViews();
+  }
+
+  private registerMenu() {
+    Menu.setApplicationMenu(menu);
   }
 
   private registerIpcChannels(ipcChannels: IpcChannelInterface[]) {
@@ -41,6 +52,12 @@ class Main {
 }
 
 // Here we go!
-(new Main()).init([
-  new FileOpenChannel(),
-  new TemplateChangeChannel()], [new MainWindow({}, MainRenderer.getViewPath())]);
+(new Main()).init(
+  [
+    new FileOpenChannel(),
+    new TemplateChangeChannel()
+  ],
+  [
+    new MainWindow({}, MainRenderer.getViewPath()),
+    new SplashWindow('')
+  ]);

@@ -1,31 +1,34 @@
 import { IpcService } from '../../services/ipc.service';
 import { RendererBaseClass } from '../../abstracts/classes/renderer.base';
-import * as path from "path";
-import { TestRenderer } from './test.renderer';
+import { DefaulColors } from '../parts/default-colors.parts';
 
-export class MainRenderer implements RendererBaseClass {
+export class MainRenderer extends RendererBaseClass {
 
-    private static viewPath = '../templates/main.html';
+    public static viewPath = '../templates/main.html';
+    public static dirName = __dirname;
 
     public render(): void {
+        DefaulColors.colorizeShell();
         const ipc = new IpcService();
 
         const parentElement = document.createElement('div');
         const button = document.createElement('button');
         const imageContainer = document.createElement('img');
 
-        button.innerHTML = "Open another template";
-        button.id = "open-template";
+        button.innerHTML = "Open image";
+        button.id = "open-image";
         button.addEventListener('click', async () => {
-            ipc.send<{}>('dreamers:change-template', { params: [TestRenderer.getViewPath()] });
+            const response = await ipc.send<{ file: string }>('dreamers:open-file');
+
+            imageContainer.src = "data:image/png;base64," + response.file;
+
+            // tslint:disable-next-line: no-console
+            console.log(imageContainer.src);
+
         });
         parentElement.appendChild(button);
         parentElement.appendChild(imageContainer);
 
         document.body.appendChild(parentElement);
-    }
-
-    public static getViewPath(): string {
-        return path.join(__dirname, MainRenderer.viewPath);
     }
 }

@@ -3,17 +3,15 @@
 
 <head>
   <meta charset="UTF-8" />
-  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'sha256-opPk6m/bnLste3otBGpuxyFBjpIzGp+OPunrUyS7lSc='; img-src data:" />
+    content="default-src 'unsafe-inline'; script-src 'sha256-opPk6m/bnLste3otBGpuxyFBjpIzGp+OPunrUyS7lSc='; img-src data:" />
   <meta
     http-equiv="X-Content-Security-Policy"
     content="default-src 'self'; script-src 'self'" />
 </head>
 
 <body>
-  <!-- You can also require other files to run in this process -->
   <script>
     renderer = require('../renderers/main.renderer.js');
     new renderer.MainRenderer().render();

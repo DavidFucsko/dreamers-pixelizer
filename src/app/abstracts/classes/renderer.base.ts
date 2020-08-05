@@ -1,7 +1,12 @@
+import * as path from "path";
+
 export abstract class RendererBaseClass {
-    private static viewPath: string;
+    public static viewPath: string;
+    public static dirName: string;
+
     abstract render(): void;
+
     static getViewPath() {
-        return this.viewPath;
+        return path.join(this.dirName, this.viewPath);
     }
 }

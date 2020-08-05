@@ -1,9 +1,11 @@
 import { BrowserWindow } from 'electron';
-import { RendererBaseClass } from '../classes/renderer.base';
 
 export interface WindowInterface {
     getWindow(): BrowserWindow;
-    createWindow(options: Electron.BrowserWindowConstructorOptions): BrowserWindow;
+    createWindow(options: Electron.BrowserWindowConstructorOptions): void;
     getDefaultOptions(): Electron.BrowserWindowConstructorOptions;
     loadView(): void;
+    destroyWindow(): void;
+    getWindowId(): string;
+    setViewPath(viewPath: string): void;
 }
