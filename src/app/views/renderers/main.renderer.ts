@@ -1,6 +1,6 @@
 import { IpcService } from '../../services/ipc.service';
 import { RendererBaseClass } from '../../abstracts/classes/renderer.base';
-import { DefaulColors } from '../parts/default-colors.parts';
+import { DefaulColors } from '../parts/default-colors.part';
 
 export class MainRenderer extends RendererBaseClass {
 
