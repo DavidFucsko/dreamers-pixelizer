@@ -3,6 +3,7 @@ import { IpcMainEvent } from 'electron';
 import { IpcRequest } from '../ipc/ipc-request';
 
 export class TemplateChangeChannel implements IpcChannelInterface {
+
     getName() {
         return 'dreamers:change-template';
     }

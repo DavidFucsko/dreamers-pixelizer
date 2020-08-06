@@ -10,7 +10,7 @@ import { menu } from './app/static/menu.template';
 import { SplashWindow } from './app/windows/splash.window';
 
 class Main {
-  private registeredWindows: WindowInterface[];
+
   private windowService: WindowService;
 
   constructor() {
@@ -37,7 +37,6 @@ class Main {
 
   private registerWindows(windowsToRegister: WindowInterface[]) {
     this.windowService.registerWindows(windowsToRegister);
-    this.registeredWindows = this.windowService.getWindows();
     this.windowService.createBrowserWindows();
     this.windowService.loadViews();
   }
@@ -51,7 +50,6 @@ class Main {
   }
 }
 
-// Here we go!
 (new Main()).init(
   [
     new FileOpenChannel(),

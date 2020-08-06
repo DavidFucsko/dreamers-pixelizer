@@ -1,31 +1,23 @@
 import { ipcRenderer } from 'electron';
+import { FileOpenResponse } from '../../../common/interfaces/file-open-response.interface';
 
 export class ImageDrawer {
-    private imageElement: HTMLImageElement;
 
-    constructor(parentElement: HTMLElement) {
-        this.subscribeForEvents();
-        this.imageElement = this.createViewPart(parentElement);
-    }
-
-    private createViewPart(parentElement: HTMLElement) {
+    public static createViewPart(parentElement: HTMLElement): HTMLImageElement {
         const imageElement = document.createElement('img');
         parentElement.appendChild(imageElement);
+        this.subscribeForEvents(imageElement);
         return imageElement;
     }
 
-    private subscribeForEvents() {
-        ipcRenderer.on('dreamers:show-image', (event, message: { file: string, path: string }) => {
-            this.setImageSrc(message.file);
+    public static setImgSrc(imgElement: HTMLImageElement, file: string) {
+        imgElement.src = "data:image/png;base64," + file;
+    }
+
+    private static subscribeForEvents(imgElement: HTMLImageElement) {
+        ipcRenderer.on('dreamers:show-image', (event, message: FileOpenResponse) => {
+            imgElement.src = "data:image/png;base64," + message.file;
         });
     }
 
-    public setImageSrc(newSrc: string) {
-        this.imageElement.src = "data:image/png;base64," + newSrc;
-    }
-
-    public getImageSrc() {
-        const result = this.imageElement.src;
-        return result;
-    }
 }

@@ -1,5 +1,6 @@
 import { Menu, MenuItem, BrowserWindow, app } from 'electron';
-import { openFileDialog } from '../../common/file-open.handler';
+import { openFileDialog } from '../../common/handlers/file-open.handler';
+import { FileOpenResponse } from '../../common/interfaces/file-open-response.interface';
 
 const isMac = process.platform === 'darwin'
 
@@ -26,7 +27,7 @@ const template = [
                 label: 'Open Image',
                 accelerator: 'CommandOrControl+N',
                 click(item: MenuItem, focusedWindow: BrowserWindow) {
-                    openFileDialog().then(result => {
+                    openFileDialog().then((result: FileOpenResponse) => {
                         if (focusedWindow) focusedWindow.webContents.send('dreamers:show-image', result);
                     });
                 }
