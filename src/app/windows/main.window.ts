@@ -18,7 +18,7 @@ export class MainWindow implements WindowInterface {
         title: `Dreamers`,
         backgroundColor: '#1E1E1E',
         webPreferences: {
-            nodeIntegration: true, // makes it possible to use `require` within our index.html
+            nodeIntegration: true,
             preload: path.join(path.dirname(require.main.filename), "preload.js")
         },
         show: false

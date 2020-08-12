@@ -8,6 +8,7 @@ import { MainRenderer } from './app/views/renderers/main.renderer';
 import { TemplateChangeChannel } from './electron/channels/template-change.channel';
 import { menu } from './app/static/menu.template';
 import { SplashWindow } from './app/windows/splash.window';
+import { PixelizeImageChannel } from './electron/channels/pixelize-image.channel';
 
 class Main {
 
@@ -18,7 +19,7 @@ class Main {
   }
 
   public init(ipcChannels: IpcChannelInterface[], windows: WindowInterface[]) {
-    app.on('ready', this.initialize.bind(this, windows));
+    app.on('ready', this.initializeView.bind(this, windows));
     app.on('window-all-closed', this.onWindowAllClosed);
 
     this.registerIpcChannels(ipcChannels);
@@ -30,7 +31,7 @@ class Main {
     }
   }
 
-  private initialize(windowsToRegister: WindowInterface[]) {
+  private initializeView(windowsToRegister: WindowInterface[]) {
     this.registerWindows(windowsToRegister);
     this.registerMenu();
   }
@@ -53,7 +54,8 @@ class Main {
 (new Main()).init(
   [
     new FileOpenChannel(),
-    new TemplateChangeChannel()
+    new TemplateChangeChannel(),
+    new PixelizeImageChannel()
   ],
   [
     new MainWindow({}, MainRenderer.getViewPath()),

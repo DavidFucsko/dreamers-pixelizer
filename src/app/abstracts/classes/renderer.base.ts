@@ -6,7 +6,7 @@ export abstract class RendererBaseClass {
 
     abstract render(): void;
 
-    static getViewPath() {
+    public static getViewPath() {
         return path.join(this.dirName, this.viewPath);
     }
 }

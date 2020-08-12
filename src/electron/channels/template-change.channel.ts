@@ -1,6 +1,7 @@
 import { IpcChannelInterface } from '../ipc/ipc-channel.interface';
 import { IpcMainEvent } from 'electron';
 import { IpcRequest } from '../ipc/ipc-request';
+import { TemplateChangeRequest } from '../ipc/template-change.request';
 
 export class TemplateChangeChannel implements IpcChannelInterface {
 
@@ -8,7 +9,7 @@ export class TemplateChangeChannel implements IpcChannelInterface {
         return 'dreamers:change-template';
     }
 
-    handle(event: IpcMainEvent, request: IpcRequest): void {
+    handle(event: IpcMainEvent, request: TemplateChangeRequest): void {
         if (!request.responseChannel) {
             request.responseChannel = `${this.getName()}_response`;
         }

@@ -14,10 +14,13 @@ export class ImageDrawer {
         imgElement.src = "data:image/png;base64," + file;
     }
 
+    public static getSourceImg(imgElement: HTMLImageElement) {
+        return imgElement.src.replace('data:image/png;base64,', '');
+    }
+
     private static subscribeForEvents(imgElement: HTMLImageElement) {
         ipcRenderer.on('dreamers:show-image', (event, message: FileOpenResponse) => {
             imgElement.src = "data:image/png;base64," + message.file;
         });
     }
-
 }

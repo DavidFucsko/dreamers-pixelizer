@@ -1,4 +1,4 @@
-export class DefaulColors {
+export class Color {
 
     public static colorizeShell() {
         const shellBackground = '#1E1E1E';
