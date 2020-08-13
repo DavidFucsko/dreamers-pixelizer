@@ -1,6 +1,7 @@
 import { IpcChannelInterface } from '../ipc/ipc-channel.interface';
-import { IpcRequest } from '../ipc/ipc-request';
 import { PixelizeImageRequest } from '../ipc/pixelize-image.request';
+
+import { pixelizeImage } from '../../common/handlers/pixelize-image.handler';
 
 export class PixelizeImageChannel implements IpcChannelInterface {
     getName(): string {
@@ -11,7 +12,9 @@ export class PixelizeImageChannel implements IpcChannelInterface {
             request.responseChannel = `${this.getName()}_response`;
         }
 
-        event.sender.send(request.responseChannel, { pixelArtImage: request.params.sourceImage });
+        console.log(request.params.pixelData);
+        pixelizeImage(request.params).then(response =>
+            event.sender.send(request.responseChannel, response));
     }
 
 }
