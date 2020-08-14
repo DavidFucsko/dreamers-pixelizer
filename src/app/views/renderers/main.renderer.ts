@@ -23,7 +23,6 @@ export class MainRenderer extends RendererBaseClass {
 
         const buttonContainer = document.createElement('div');
         const openButton = DreamersButton.createViewPart(buttonContainer, "Open Image");
-        const pixelizeButton = DreamersButton.createViewPart(buttonContainer, "Pixelize Image");
         parentElement.appendChild(buttonContainer);
 
         const blockInputSliderDiv = document.createElement('div');
@@ -97,12 +96,6 @@ export class MainRenderer extends RendererBaseClass {
             sourceImageContainer.drawImage(response.file);
         });
 
-        pixelizeButton.addEventListener('click', this.pixelizeImage.bind(this,
-            blockInputSlider,
-            sourceImageContainer,
-            colorInputSlider,
-            pixelizedImageContainer,
-            ipc));
         parentElement.ondragover = () => {
             return false;
         };
