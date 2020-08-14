@@ -28,9 +28,11 @@ export class ImageDrawer {
 
     public drawImage(file: string): void {
         this.image.onload = () => {
-            this.canvas.width = this.image.width;
-            this.canvas.height = this.image.height;
-            ctx.drawImage(this.image, 0, 0);
+            const imagePropotion = this.image.width / this.image.height;
+            this.canvas.width = 800;
+            this.canvas.height = 800 / imagePropotion;
+
+            ctx.drawImage(this.image, 0, 0, this.canvas.width, this.canvas.height);
         };
         const ctx = this.canvas.getContext('2d');
         this.setImgSource(file);
