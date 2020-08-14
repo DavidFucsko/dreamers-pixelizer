@@ -8,4 +8,6 @@ export interface PixelizeImageRequestParams {
     pixelData: Uint8ClampedArray;
     width: number;
     height: number;
+    blockSize: number;
+    propotionOfColor: number;
 }

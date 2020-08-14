@@ -12,8 +12,8 @@ export async function pixelizeImage(sourceImgParams: PixelizeImageRequestParams)
     const sourceData = sourceImgParams.pixelData;
     const pixelData = new Uint8ClampedArray(sourceData.length);
 
-    const blockSize = 20;
-    const propotionOfColors = 0.5;
+    const blockSize = sourceImgParams.blockSize;
+    const propotionOfColors = sourceImgParams.propotionOfColor;
 
     const pixelWidth = sourceImgParams.width * 4;
     const doubleLineCount = (blockSize / 4) * pixelWidth;

@@ -23,7 +23,35 @@ export class MainRenderer extends RendererBaseClass {
         const sourceImageContainer = ImageDrawer.createViewPart(parentElement);
         const pixelizedImageContainer = ImageDrawer.createViewPart(parentElement);
 
+        const blockInputSlider = document.createElement('input');
+
+        blockInputSlider.type = 'range';
+        blockInputSlider.step = '4';
+        blockInputSlider.min = '16';
+        blockInputSlider.id = 'block';
+
+        const blockLabel = document.createElement('label');
+        blockLabel.htmlFor = 'block';
+        blockLabel.innerText = blockInputSlider.value;
+
+        const colorInputSlider = document.createElement('input');
+
+        colorInputSlider.type = 'range';
+        colorInputSlider.step = '0.1';
+        colorInputSlider.min = '0.1';
+        colorInputSlider.id = 'colorInput'
+        //colorInputSlider.onchange = (val) => {colorLabel.innerText = val}
+
+        const colorLabel = document.createElement('label');
+        colorLabel.htmlFor = 'colorInput';
+        colorLabel.innerText = colorInputSlider.value;
+
         sourceImageContainer.subscribeForIpcEvent('dreamers:show-image');
+
+        parentElement.appendChild(blockInputSlider);
+        parentElement.appendChild(blockLabel);
+        parentElement.appendChild(colorInputSlider);
+        parentElement.appendChild(colorLabel);
 
         document.body.appendChild(parentElement);
 
@@ -40,7 +68,9 @@ export class MainRenderer extends RendererBaseClass {
                     params: {
                         pixelData: sourceImgData.data,
                         width: sourceImgData.width,
-                        height: sourceImgData.height
+                        height: sourceImgData.height,
+                        blockSize: Number(blockInputSlider.value),
+                        propotionOfColor: Number(colorInputSlider.value)
                     }
                 } as PixelizeImageRequest);
             pixelizedImageContainer.putImageData(response.pixelArtImage);
