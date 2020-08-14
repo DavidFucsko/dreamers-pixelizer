@@ -13,10 +13,12 @@ export class MainWindow implements WindowInterface {
     private static windowId: string = 'main';
 
     private static defaultOptions: Electron.BrowserWindowConstructorOptions = {
-        width: 800,
-        height: 600,
+        width: 1024,
+        height: 768,
         title: `Dreamers`,
         backgroundColor: '#1E1E1E',
+        frame: false,
+        titleBarStyle: 'hidden',
         webPreferences: {
             nodeIntegration: true,
             preload: path.join(path.dirname(require.main.filename), "preload.js")

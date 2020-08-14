@@ -23,6 +23,7 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "copyfiles": "^2.3.0"
+    "copyfiles": "^2.3.0",
+    "custom-electron-titlebar": "^3.2.4"
   }
 }

@@ -3,7 +3,7 @@ import { PixelizeImageResponse } from '../responses/pixelize-image-response.inte
 
 const palette = new Map<string, number>();
 let dominantColors: string[] = [];
-const orderedColors: string[] = [];
+let orderedColors: string[] = [];
 
 let dominantColorsRGB: { red: number, green: number, blue: number }[] = [];
 
@@ -37,6 +37,7 @@ export async function pixelizeImage(sourceImgParams: PixelizeImageRequestParams)
                 pixelWidth,
                 blockSize
             );
+            clearState();
             resolve({
                 pixelArtImage: {
                     pixels: pixelData,
@@ -48,6 +49,12 @@ export async function pixelizeImage(sourceImgParams: PixelizeImageRequestParams)
             reject(new Error(error));
         }
     });
+}
+
+function clearState() {
+    palette.clear();
+    dominantColors = [];
+    orderedColors = [];
 }
 
 function iterateOverData(

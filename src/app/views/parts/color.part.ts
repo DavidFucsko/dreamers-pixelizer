@@ -6,6 +6,10 @@ export class Color {
         const style = document.createElement('style');
         style.className = 'initialShellColors';
         document.head.appendChild(style);
-        style.innerHTML = `body { background-color: ${shellBackground}; color: ${shellForeground}; margin: 0; padding: 0; }`;
+        style.innerHTML = `body {
+            background-color: ${shellBackground};
+            color: ${shellForeground}; margin: 0; padding: 0;
+            font-family: Roboto, sans-serif;
+            }`;
     }
 }
