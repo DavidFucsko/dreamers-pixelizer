@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'unsafe-inline'; script-src 'sha256-opPk6m/bnLste3otBGpuxyFBjpIzGp+OPunrUyS7lSc=' 'sha256-lHdHj9HsIsyWfGD0ukZPALKZ9MyVK01OIHW1MSYSyHU='; img-src data:" />
+  <meta
+    http-equiv="X-Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'" />
+</head>
+
+<body>
+  <script>
+    renderer = require('../renderers/main.renderer.js');
+    new renderer.MainRenderer().render();
+  </script>
+  <script>
+    customTitlebar = require('custom-electron-titlebar');
+    new customTitlebar.Titlebar({
+      backgroundColor: customTitlebar.Color.fromHex('#424040'),
+      shadow: true,
+      minimizable: true,
+      maximizable: true,
+      closeable: true,
+      overflow: 'auto'
+    });
+  </script>
+</body>
+
+</html>
