@@ -1,6 +1,7 @@
 import { ipcRenderer } from 'electron';
 import { FileOpenResponse } from '../../../common/responses/file-open-response.interface';
 import { DreamersImageData } from '../../../common/models/dreamers-image.model';
+import * as fs from 'fs';
 
 export class ImageDrawer {
 
@@ -12,6 +13,8 @@ export class ImageDrawer {
         const imageDrawer = new ImageDrawer();
         imageDrawer.image = new Image();
         imageDrawer.canvas = document.createElement('canvas');
+        imageDrawer.canvas.width = 400;
+        imageDrawer.canvas.height = 300;
         parentElement.appendChild(imageDrawer.canvas);
         return imageDrawer;
     }
@@ -46,10 +49,28 @@ export class ImageDrawer {
         ctx.putImageData(trueData, 0, 0);
     }
 
-    public subscribeForIpcEvent(ipcEventName: string): void {
-        ipcRenderer.on(ipcEventName, (_, message: FileOpenResponse) => {
+    public subscribeForOpenIpcEvent(): void {
+        ipcRenderer.on('dreamers:show-image', (_, message: FileOpenResponse) => {
             this.drawImage(message.file);
         });
+    }
+
+    public subscribeForSaveIpcEvent(): void {
+        ipcRenderer.on('dreamers:save-image', (_, message: { filePath: string }) => {
+            this.saveImage(message.filePath);
+        });
+    }
+
+    public saveImage(filePath: string) {
+        const url: string = this.getFileDatUrl();
+        const base64Data = url.replace(/^data:image\/png;base64,/, "");
+        fs.writeFile(filePath, base64Data, 'base64', (err) => {
+            return new Error(err.message);
+        });
+    }
+
+    public getFileDatUrl(): string {
+        return this.canvas.toDataURL('img/jpg', 0.8);
     }
 
     private setImgSource(base64File: string): void {

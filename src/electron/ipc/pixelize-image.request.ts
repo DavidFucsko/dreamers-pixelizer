@@ -10,4 +10,6 @@ export interface PixelizeImageRequestParams {
     height: number;
     blockSize: number;
     propotionOfColor: number;
+    removeSimilarColors: boolean;
+    removeColorPortion: number;
 }

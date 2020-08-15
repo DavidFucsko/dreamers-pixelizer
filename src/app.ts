@@ -9,6 +9,7 @@ import { TemplateChangeChannel } from './electron/channels/template-change.chann
 import { menu } from './app/static/menu.template';
 import { SplashWindow } from './app/windows/splash.window';
 import { PixelizeImageChannel } from './electron/channels/pixelize-image.channel';
+import { SaveFileChannel } from './electron/channels/save-file.channel';
 
 class Main {
 
@@ -55,7 +56,8 @@ class Main {
   [
     new FileOpenChannel(),
     new TemplateChangeChannel(),
-    new PixelizeImageChannel()
+    new PixelizeImageChannel(),
+    new SaveFileChannel()
   ],
   [
     new MainWindow({}, MainRenderer.getViewPath()),

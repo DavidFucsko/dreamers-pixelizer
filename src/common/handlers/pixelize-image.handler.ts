@@ -29,7 +29,7 @@ export async function pixelizeImage(sourceImgParams: PixelizeImageRequestParams)
                 pixelWidth,
                 blockSize
             );
-            createPalette(propotionOfColors);
+            createPalette(propotionOfColors, sourceImgParams.removeSimilarColors, sourceImgParams.removeColorPortion);
             iterateOverData(
                 colorizePixels.bind(this, pixelData, pixelWidth, sourceData),
                 numberOfDoubleLines,
@@ -116,7 +116,12 @@ function extractDominantColors(
     }
 }
 
-function createPalette(propotionOfColors: number) {
+function createPalette(propotionOfColors: number, removeSimilarColors: boolean, removeColorPortion: number) {
+
+    if (removeSimilarColors) {
+        removeSimilarColorsFromPalette(palette, removeColorPortion);
+    }
+
     palette[Symbol.iterator] = function* () {
         yield* [...this.entries()].sort((a, b) => b[1] - a[1]);
     }
@@ -133,6 +138,52 @@ function createPalette(propotionOfColors: number) {
     }));
 
 }
+
+function removeSimilarColorsFromPalette(paletteToShirnk: Map<string, number>, removeColorPortion: number) {
+    paletteToShirnk[Symbol.iterator] = function* () {
+        yield* [...this.entries()]
+            .sort((a, b) => rgbToHsl(b[0])[0] - rgbToHsl(a[0])[0]);
+    }
+
+    const sortedEntries = [];
+
+    for (const [key, value] of palette) {
+        sortedEntries.push(key);
+    }
+
+    for (let i = sortedEntries.length - 1; i > 0; i--) {
+        if (!(colorDifferenceByColorString(sortedEntries[i], sortedEntries[i - 1]) > 441 * removeColorPortion)) {
+            paletteToShirnk.delete(sortedEntries[i]);
+        }
+    }
+}
+
+function rgbToHsl(colorCode: string) {
+    const r = parseInt(colorCode.toString().slice(0, 3), 10) / 255;
+    const g = parseInt(colorCode.toString().slice(3, 6), 10) / 255;
+    const b = parseInt(colorCode.toString().slice(6, 9), 10) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = (max + min) / 2;
+    let s = h;
+    const l = s;
+
+    if (max === min) {
+        h = s = 0; // achromatic
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    return new Array(h * 360, s * 100, l * 100);
+}
+
 
 function findColorFromPalette(pixelColor: { red: number, green: number, blue: number }) {
     let closestColorHash = 0;
@@ -164,6 +215,27 @@ function colorDifference(r1: number, g1: number, b1: number, r2: number, g2: num
     sumOfSquares += Math.pow(b1 - b2, 2);
 
     return Math.sqrt(sumOfSquares);
+}
+
+function colorDifferenceByColorString(firstColorString: string, secondColorString: string) {
+    const firstColor = {
+        red: parseInt(firstColorString.toString().slice(0, 3), 10),
+        green: parseInt(firstColorString.toString().slice(3, 6), 10),
+        blue: parseInt(firstColorString.toString().slice(6, 9), 10)
+    }
+    const secondColor = {
+        red: parseInt(secondColorString.toString().slice(0, 3), 10),
+        green: parseInt(secondColorString.toString().slice(3, 6), 10),
+        blue: parseInt(secondColorString.toString().slice(6, 9), 10)
+    }
+
+    return colorDifference(
+        firstColor.red,
+        firstColor.green,
+        firstColor.blue,
+        secondColor.red,
+        secondColor.green,
+        secondColor.blue);
 }
 
 function getSuperPixelColorsFromIndex(

@@ -4,6 +4,7 @@ export class DreamersButton {
         const buttonElement = document.createElement('button');
         buttonElement.innerHTML = label;
         parentElement.appendChild(buttonElement);
+        buttonElement.className = 'btn draw-border';
         return buttonElement;
     }
 }

@@ -1,6 +1,7 @@
 import { Menu, MenuItem, BrowserWindow, app } from 'electron';
 import { openFileDialog } from '../../common/handlers/file-open.handler';
 import { FileOpenResponse } from '../../common/responses/file-open-response.interface';
+import { saveFileDialog } from '../../common/handlers/save-file.handler';
 
 const isMac = process.platform === 'darwin'
 
@@ -29,6 +30,15 @@ const template = [
                 click(item: MenuItem, focusedWindow: BrowserWindow) {
                     openFileDialog().then((result: FileOpenResponse) => {
                         if (focusedWindow) focusedWindow.webContents.send('dreamers:show-image', result);
+                    });
+                }
+            },
+            {
+                label: 'Save Image',
+                accelerator: 'CommandOrControl+S',
+                click(item: MenuItem, focusedWindow: BrowserWindow) {
+                    saveFileDialog().then((result: { filePath: string }) => {
+                        if (focusedWindow) focusedWindow.webContents.send('dreamers:save-image', result);
                     });
                 }
             },
