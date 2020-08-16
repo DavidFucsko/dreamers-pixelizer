@@ -10,9 +10,10 @@
     "prestart": "copyfiles --flat src/app/views/templates/*.html dist/app/views/templates && copyfiles --flat src/app/views/styles/*.css dist/app/views/styles",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "start": "npm run build && electron ./dist/app.js",
-    "package-win": "electron-packager . DreamersPixelizer --overwrite  --platform=win32 --arch=ia32 --icon=assets/icon/win/icon.ico --prune=true --asar --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName='Dreamers Pixelize'",
-    "package-osx": "electron-packager . DreamersPixelizer --overwrite  --platform=darwin --arch=x64 --icon=assets/icon/osx/icon.icns --prune=true --asar --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName='Dreamers Pixelize'",
-    "create-installer-osx": "electron-installer-dmg ./release-builds/Dreamers-Pixelizer-darwin-x64 DreamersPixelizer"
+    "create-installer-osx": "electron-installer-dmg ./release-builds/Dreamers-Pixelizer-darwin-x64 DreamersPixelizer",
+    "create-installer": "node ./build/windows/build-msi-installer.js",
+    "package-win": "electron-packager . DreamersPixelizer --overwrite  --platform=win32 --arch=ia32 --icon=assets/icon/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName='Dreamers Pixelize'",
+    "package-osx": "electron-packager . DreamersPixelizer --overwrite  --platform=darwin --arch=x64 --icon=assets/icon/osx/icon.icns --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName='Dreamers Pixelize'"
   },
   "repository": "https://github.com/electron/electron-quick-start-typescript",
   "keywords": [
@@ -24,6 +25,7 @@
   "devDependencies": {
     "electron": "^9.0.4",
     "electron-installer-dmg": "^3.0.0",
+    "electron-wix-msi": "^3.0.0",
     "tslint": "^6.1.2",
     "typescript": "^3.9.5"
   },
