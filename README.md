@@ -15,13 +15,22 @@ members: DavidFucsko and AlizTotivan
 
 - npm run package-osx
 
-## Create installer:
+## Create installer Windows:
 
-- npm build ./build/windows/build-msi-installer.js
+- npm ./build/windows/build-msi-installer.js
+### OR 
+- npm run create-installer
+
+## Create installer Mac:
+
+- npm run create-installer-osx
 
 ## Run on windows:
 
 - Run exe in release folder
+### OR 
+
+- Install the app via msi
 
 ## Use Git Lfs
 
