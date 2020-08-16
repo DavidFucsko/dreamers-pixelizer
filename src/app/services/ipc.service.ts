@@ -1,5 +1,5 @@
 import { IpcRenderer } from 'electron';
-import { IpcRequest } from '../../electron/ipc/ipc-request';
+import { IpcRequest } from '../../electron';
 
 export class IpcService {
 

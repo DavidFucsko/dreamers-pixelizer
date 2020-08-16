@@ -1,7 +1,7 @@
 import { IpcChannelInterface } from '../ipc/ipc-channel.interface';
 import { PixelizeImageRequest } from '../ipc/pixelize-image.request';
 
-import { pixelizeImage } from '../../common/handlers/pixelize-image.handler';
+import { pixelizeImage } from '../../common';
 
 export class PixelizeImageChannel implements IpcChannelInterface {
     getName(): string {

@@ -1,12 +1,12 @@
 export class StylePart {
 
-    public static applyStyles() {
-        const shellBackground = '#1E1E1E';
-        const shellForeground = '#CCCCCC';
-        const style = document.createElement('style');
-        style.className = 'initialShellColors';
-        document.head.appendChild(style);
-        style.innerHTML = `body {
+  public static applyStyles() {
+    const shellBackground = '#1E1E1E';
+    const shellForeground = '#CCCCCC';
+    const style = document.createElement('style');
+    style.className = 'initialShellColors';
+    document.head.appendChild(style);
+    style.innerHTML = `body {
             padding: 10px;
             background-color: ${shellBackground};
             color: ${shellForeground}; margin: 0; padding: 0;
@@ -31,6 +31,12 @@ export class StylePart {
                 align-items: center;
                 margin-bottom: 20px;
                 margin-top: 25px;
+            }
+            .absolute {
+              position: absolute;
+            }
+            .canvasContainer{
+              z-index: 2;
             }
             .btn {
                 background: none;
@@ -163,5 +169,5 @@ export class StylePart {
               input[type=checkbox]:checked + label {
                 left: 37px;
               }`;
-    }
+  }
 }

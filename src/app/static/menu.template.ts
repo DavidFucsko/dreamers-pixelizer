@@ -1,7 +1,5 @@
 import { Menu, MenuItem, BrowserWindow, app } from 'electron';
-import { openFileDialog } from '../../common/handlers/file-open.handler';
-import { FileOpenResponse } from '../../common/responses/file-open-response.interface';
-import { saveFileDialog } from '../../common/handlers/save-file.handler';
+import { openFileDialog, FileOpenResponse, saveFileDialog } from '../../common';
 
 const isMac = process.platform === 'darwin'
 

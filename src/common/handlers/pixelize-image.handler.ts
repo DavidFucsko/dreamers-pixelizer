@@ -1,4 +1,4 @@
-import { PixelizeImageRequestParams } from '../../electron/ipc/pixelize-image.request';
+import { PixelizeImageRequestParams } from '../../electron';
 import { PixelizeImageResponse } from '../responses/pixelize-image-response.interface';
 
 const palette = new Map<string, number>();
@@ -8,7 +8,6 @@ let orderedColors: string[] = [];
 let dominantColorsRGB: { red: number, green: number, blue: number }[] = [];
 
 export async function pixelizeImage(sourceImgParams: PixelizeImageRequestParams): Promise<PixelizeImageResponse> {
-
     const sourceData = sourceImgParams.pixelData;
     const pixelData = new Uint8ClampedArray(sourceData.length);
 
@@ -183,7 +182,6 @@ function rgbToHsl(colorCode: string) {
     }
     return new Array(h * 360, s * 100, l * 100);
 }
-
 
 function findColorFromPalette(pixelColor: { red: number, green: number, blue: number }) {
     let closestColorHash = 0;

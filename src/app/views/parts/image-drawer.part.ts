@@ -1,6 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { FileOpenResponse } from '../../../common/responses/file-open-response.interface';
-import { DreamersImageData } from '../../../common/models/dreamers-image.model';
+import { DreamersImageData, FileOpenResponse } from '../../../common';
 import * as fs from 'fs';
 
 export class ImageDrawer {
@@ -10,12 +9,18 @@ export class ImageDrawer {
     private image: HTMLImageElement;
 
     public static createViewPart(parentElement: HTMLElement): ImageDrawer {
+        const canvasContainer = document.createElement('div');
+        canvasContainer.className = 'canvasContainer';
+
         const imageDrawer = new ImageDrawer();
         imageDrawer.image = new Image();
         imageDrawer.canvas = document.createElement('canvas');
         imageDrawer.canvas.width = 400;
         imageDrawer.canvas.height = 300;
-        parentElement.appendChild(imageDrawer.canvas);
+
+        canvasContainer.appendChild(imageDrawer.canvas);
+        parentElement.appendChild(canvasContainer);
+
         return imageDrawer;
     }
 

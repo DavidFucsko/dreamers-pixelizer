@@ -1,8 +1,7 @@
 import { IpcChannelInterface } from '../ipc/ipc-channel.interface';
 import { IpcMainEvent } from 'electron';
 import { IpcRequest } from '../ipc/ipc-request';
-import { openFileDialog } from '../../common/handlers/file-open.handler';
-import { FileOpenResponse } from '../../common/responses/file-open-response.interface';
+import { openFileDialog, FileOpenResponse } from '../../common';
 
 export class FileOpenChannel implements IpcChannelInterface {
 

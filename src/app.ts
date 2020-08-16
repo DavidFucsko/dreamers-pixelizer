@@ -1,15 +1,17 @@
 import { app, ipcMain, Menu } from 'electron';
-import { IpcChannelInterface } from './electron/ipc/ipc-channel.interface';
-import { FileOpenChannel } from './electron/channels/file-open.channel';
 import { WindowInterface } from './app/abstracts/interfaces/window.interface';
 import { WindowService } from './app/services/window.service';
 import { MainWindow } from './app/windows/main.window';
 import { MainRenderer } from './app/views/renderers/main.renderer';
-import { TemplateChangeChannel } from './electron/channels/template-change.channel';
 import { menu } from './app/static/menu.template';
 import { SplashWindow } from './app/windows/splash.window';
-import { PixelizeImageChannel } from './electron/channels/pixelize-image.channel';
-import { SaveFileChannel } from './electron/channels/save-file.channel';
+import {
+  IpcChannelInterface,
+  FileOpenChannel,
+  TemplateChangeChannel,
+  PixelizeImageChannel,
+  SaveFileChannel
+} from './electron';
 
 class Main {
 

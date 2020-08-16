@@ -13,3 +13,10 @@ export interface PixelizeImageRequestParams {
     removeSimilarColors: boolean;
     removeColorPortion: number;
 }
+
+export interface PixelizeImageRequestInputParams {
+    blockSize: string;
+    propotionOfColor: string;
+    removeSimilarColors: boolean;
+    removeColorPortion: string;
+}

@@ -1,7 +1,7 @@
-import { IpcChannelInterface } from '../ipc/ipc-channel.interface';
 import { IpcMainEvent } from 'electron';
+import { IpcChannelInterface } from '../ipc/ipc-channel.interface';
 import { IpcRequest } from '../ipc/ipc-request';
-import { saveFileDialog } from '../../common/handlers/save-file.handler';
+import { saveFileDialog } from '../../common';
 
 export class SaveFileChannel implements IpcChannelInterface {
 
