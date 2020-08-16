@@ -11,8 +11,7 @@ export class PixelizeImageChannel implements IpcChannelInterface {
         if (!request.responseChannel) {
             request.responseChannel = `${this.getName()}_response`;
         }
-
-        console.log(request.params.pixelData);
+        
         pixelizeImage(request.params).then(response =>
             event.sender.send(request.responseChannel, response));
     }
