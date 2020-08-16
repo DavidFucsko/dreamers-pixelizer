@@ -22,3 +22,10 @@ members: DavidFucsko and AlizTotivan
 ## Run on windows:
 
 - Run exe in release folder
+
+## Use Git Lfs
+
+- git lfs install in local repo
+- git lfs track \*.msi
+- git lfs push --all origin master
+- git push -u origin master
