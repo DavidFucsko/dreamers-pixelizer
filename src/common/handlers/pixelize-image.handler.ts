@@ -5,19 +5,15 @@ import { PixelizingParameters, ColorObject } from '../models';
 const palette = new Map<string, number>();
 let dominantColors: string[] = [];
 let orderedColors: string[] = [];
-
-let dominantColorsRGB: { red: number, green: number, blue: number }[] = [];
+let dominantColorsRGB: ColorObject[] = [];
 
 const pixelizingParameters: PixelizingParameters = {} as PixelizingParameters;
 
 export async function pixelizeImage(sourceImgParams: PixelizeImageRequestParams): Promise<PixelizeImageResponse> {
-    pixelizingParameters.sourceData = new Uint8ClampedArray(sourceImgParams.pixelData.length);
     pixelizingParameters.sourceData = sourceImgParams.pixelData;
     pixelizingParameters.pixelizedData = new Uint8ClampedArray(pixelizingParameters.sourceData.length);
-
     pixelizingParameters.blockSize = sourceImgParams.blockSize;
     pixelizingParameters.propotionOfColors = sourceImgParams.propotionOfColor;
-
     pixelizingParameters.pixelWidth = sourceImgParams.width * 4;
     pixelizingParameters.blockWidth = (pixelizingParameters.blockSize / 4) * pixelizingParameters.pixelWidth;
     pixelizingParameters.numberOfBlocks =
