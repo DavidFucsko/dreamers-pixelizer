@@ -1,45 +1,38 @@
 import { PixelizeImageRequestParams } from '../../electron';
 import { PixelizeImageResponse } from '../responses/pixelize-image-response.interface';
+import { PixelizingParameters, ColorObject } from '../models';
 
 const palette = new Map<string, number>();
 let dominantColors: string[] = [];
 let orderedColors: string[] = [];
+let dominantColorsRGB: ColorObject[] = [];
 
-let dominantColorsRGB: { red: number, green: number, blue: number }[] = [];
+const pixelizingParameters: PixelizingParameters = {} as PixelizingParameters;
 
 export async function pixelizeImage(sourceImgParams: PixelizeImageRequestParams): Promise<PixelizeImageResponse> {
-    const sourceData = sourceImgParams.pixelData;
-    const pixelData = new Uint8ClampedArray(sourceData.length);
-
-    const blockSize = sourceImgParams.blockSize;
-    const propotionOfColors = sourceImgParams.propotionOfColor;
-
-    const pixelWidth = sourceImgParams.width * 4;
-    const doubleLineCount = (blockSize / 4) * pixelWidth;
-    const numberOfDoubleLines = ((pixelWidth * sourceImgParams.height)) - doubleLineCount;
+    pixelizingParameters.sourceData = sourceImgParams.pixelData;
+    pixelizingParameters.pixelizedData = new Uint8ClampedArray(pixelizingParameters.sourceData.length);
+    pixelizingParameters.blockSize = sourceImgParams.blockSize;
+    pixelizingParameters.propotionOfColors = sourceImgParams.propotionOfColor;
+    pixelizingParameters.pixelWidth = sourceImgParams.width * 4;
+    pixelizingParameters.blockWidth = (pixelizingParameters.blockSize / 4) * pixelizingParameters.pixelWidth;
+    pixelizingParameters.numberOfBlocks =
+        ((pixelizingParameters.pixelWidth * sourceImgParams.height)) - pixelizingParameters.blockWidth;
 
     return new Promise<PixelizeImageResponse>((resolve, reject) => {
 
         try {
             iterateOverData(
-                extractDominantColors.bind(this, sourceData, pixelWidth),
-                numberOfDoubleLines,
-                doubleLineCount,
-                pixelWidth,
-                blockSize
+                extractDominantColors.bind(this)
             );
-            createPalette(propotionOfColors, sourceImgParams.removeSimilarColors, sourceImgParams.removeColorPortion);
+            createPalette(sourceImgParams.removeSimilarColors, sourceImgParams.removeColorPortion);
             iterateOverData(
-                colorizePixels.bind(this, pixelData, pixelWidth, sourceData),
-                numberOfDoubleLines,
-                doubleLineCount,
-                pixelWidth,
-                blockSize
+                colorizePixels.bind(this)
             );
             clearState();
             resolve({
                 pixelArtImage: {
-                    pixels: pixelData,
+                    pixels: pixelizingParameters.pixelizedData,
                     width: sourceImgParams.width,
                     height: sourceImgParams.height
                 }
@@ -50,57 +43,19 @@ export async function pixelizeImage(sourceImgParams: PixelizeImageRequestParams)
     });
 }
 
-function clearState() {
-    palette.clear();
-    dominantColors = [];
-    orderedColors = [];
-}
-
-function iterateOverData(
-    functionToRun: () => void,
-    numberOfDoubleLines: number,
-    doubleLineCount: number,
-    pixelWidth: number,
-    blockSize: number) {
+function iterateOverData(functionToRun: () => void): void {
     for (let i = 0;
-        i <= numberOfDoubleLines;
-        i += doubleLineCount) {
-        for (let j = i; j <= i + pixelWidth; j += blockSize) {
-            const newFunc = functionToRun.bind(null, blockSize, j);
+        i <= pixelizingParameters.numberOfBlocks;
+        i += pixelizingParameters.blockWidth) {
+        for (let j = i; j <= i + pixelizingParameters.pixelWidth; j += pixelizingParameters.blockSize) {
+            const newFunc = functionToRun.bind(null, j);
             newFunc();
         }
     }
 }
 
-function colorizePixels(
-    pixelData: Uint8ClampedArray,
-    pixelWidth: number,
-    sourceData: Uint8ClampedArray,
-    blockSize?: number,
-    index?: number) {
-
-    const avgColors = getSuperPixelColorsFromIndex(index, sourceData, pixelWidth, blockSize);
-
-    const color = findColorFromPalette(avgColors);
-
-    for (let bs = 0; bs < blockSize / 4; bs++) {
-        const lineOffset = index + pixelWidth * bs;
-        for (let ps = 0; ps < blockSize; ps += 4) {
-            const pixelOffset = lineOffset + ps;
-            pixelData[pixelOffset] = color.red;
-            pixelData[pixelOffset + 1] = color.green;
-            pixelData[pixelOffset + 2] = color.blue;
-            pixelData[pixelOffset + 3] = 255;
-        }
-    }
-}
-
-function extractDominantColors(
-    sourceData: Uint8ClampedArray,
-    pixelWidth: number,
-    blockSize?: number,
-    index?: number) {
-    const avgColors = getSuperPixelColorsFromIndex(index, sourceData, pixelWidth, blockSize);
+function extractDominantColors(index?: number): void {
+    const avgColors = getSuperPixelColorsFromIndex(index);
 
     const hashedColor =
         ("00" + avgColors.red.toString()).slice(-3) +
@@ -115,8 +70,7 @@ function extractDominantColors(
     }
 }
 
-function createPalette(propotionOfColors: number, removeSimilarColors: boolean, removeColorPortion: number) {
-
+function createPalette(removeSimilarColors: boolean, removeColorPortion: number): void {
     if (removeSimilarColors) {
         removeSimilarColorsFromPalette(palette, removeColorPortion);
     }
@@ -129,16 +83,94 @@ function createPalette(propotionOfColors: number, removeSimilarColors: boolean, 
         orderedColors.push(key);
     }
 
-    dominantColors = orderedColors.slice(0, orderedColors.length * propotionOfColors);
-    dominantColorsRGB = dominantColors.map(colorCode => ({
-        red: parseInt(colorCode.toString().slice(0, 3), 10),
-        green: parseInt(colorCode.toString().slice(3, 6), 10),
-        blue: parseInt(colorCode.toString().slice(6, 9), 10)
-    }));
+    dominantColors = orderedColors.slice(0, orderedColors.length * pixelizingParameters.propotionOfColors);
+    dominantColorsRGB = dominantColors.map(colorCode => (colorObjectFromColorCode(colorCode)));
 
 }
 
-function removeSimilarColorsFromPalette(paletteToShirnk: Map<string, number>, removeColorPortion: number) {
+function colorizePixels(index?: number): void {
+    const avgColors = getSuperPixelColorsFromIndex(index);
+    const color = findColorFromPalette(avgColors);
+
+    for (let bs = 0; bs < pixelizingParameters.blockSize / 4; bs++) {
+        const lineOffset = index + pixelizingParameters.pixelWidth * bs;
+        for (let ps = 0; ps < pixelizingParameters.blockSize; ps += 4) {
+            const pixelOffset = lineOffset + ps;
+            pixelizingParameters.pixelizedData[pixelOffset] = color.red;
+            pixelizingParameters.pixelizedData[pixelOffset + 1] = color.green;
+            pixelizingParameters.pixelizedData[pixelOffset + 2] = color.blue;
+            pixelizingParameters.pixelizedData[pixelOffset + 3] = 255;
+        }
+    }
+}
+
+function clearState(): void {
+    palette.clear();
+    dominantColors = [];
+    orderedColors = [];
+}
+
+function getSuperPixelColorsFromIndex(index: number): ColorObject {
+    const reds: number[] = [];
+    const greens: number[] = [];
+    const blues: number[] = [];
+
+    for (let bs = 0; bs < pixelizingParameters.blockSize / 4; bs++) {
+        const lineOffset = index + pixelizingParameters.pixelWidth * bs;
+        for (let ps = 0; ps < pixelizingParameters.blockSize; ps += 4) {
+            const pixelOffset = lineOffset + ps;
+            reds.push(pixelizingParameters.sourceData[pixelOffset]);
+            greens.push(pixelizingParameters.sourceData[pixelOffset + 1]);
+            blues.push(pixelizingParameters.sourceData[pixelOffset + 2]);
+        }
+    }
+    const avgRed = calculateAvgColor(reds);
+    const avgBlue = calculateAvgColor(blues);
+    const avgGreen = calculateAvgColor(greens);
+    return {
+        red: parseInt(avgRed.toString(), 10),
+        green: parseInt(avgGreen.toString(), 10),
+        blue: parseInt(avgBlue.toString(), 10)
+    };
+}
+
+function calculateAvgColor(colors: number[]): number {
+    return (colors.reduce((a, b) => a + b, 0) / pixelizingParameters.blockSize) * (16 / pixelizingParameters.blockSize);
+}
+
+function findColorFromPalette(pixelColor: ColorObject): ColorObject {
+    let closestColorHash = 0;
+    let closestColor = { red: 0, green: 0, blue: 0 };
+    dominantColorsRGB.forEach((color, index) => {
+        const colorDiff = colorDifference(pixelColor, color);
+
+        if (index === 0 || colorDiff < closestColorHash) {
+            closestColorHash = colorDiff;
+            closestColor = color;
+        }
+    });
+
+    return closestColor;
+}
+
+function colorDifferenceByColorString(firstColorCode: string, secondColorCode: string): number {
+    const firstColor = colorObjectFromColorCode(firstColorCode);
+    const secondColor = colorObjectFromColorCode(secondColorCode);
+
+    return colorDifference(firstColor, secondColor);
+}
+
+function colorDifference(firstColor: ColorObject, secondColor: ColorObject): number {
+    let sumOfSquares = 0;
+
+    sumOfSquares += Math.pow(firstColor.red - secondColor.red, 2);
+    sumOfSquares += Math.pow(firstColor.green - secondColor.green, 2);
+    sumOfSquares += Math.pow(firstColor.blue - secondColor.blue, 2);
+
+    return Math.sqrt(sumOfSquares);
+}
+
+function removeSimilarColorsFromPalette(paletteToShirnk: Map<string, number>, removeColorPortion: number): void {
     paletteToShirnk[Symbol.iterator] = function* () {
         yield* [...this.entries()]
             .sort((a, b) => rgbToHsl(b[0])[0] - rgbToHsl(a[0])[0]);
@@ -157,10 +189,11 @@ function removeSimilarColorsFromPalette(paletteToShirnk: Map<string, number>, re
     }
 }
 
-function rgbToHsl(colorCode: string) {
-    const r = parseInt(colorCode.toString().slice(0, 3), 10) / 255;
-    const g = parseInt(colorCode.toString().slice(3, 6), 10) / 255;
-    const b = parseInt(colorCode.toString().slice(6, 9), 10) / 255;
+function rgbToHsl(colorCode: string): number[] {
+    const color = colorObjectFromColorCode(colorCode);
+    const r = color.red / 255;
+    const g = color.green / 255;
+    const b = color.blue / 255;
 
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
@@ -183,84 +216,10 @@ function rgbToHsl(colorCode: string) {
     return new Array(h * 360, s * 100, l * 100);
 }
 
-function findColorFromPalette(pixelColor: { red: number, green: number, blue: number }) {
-    let closestColorHash = 0;
-    let closestColor = { red: 0, green: 0, blue: 0 };
-    dominantColorsRGB.forEach((color, index) => {
-        const colorDiff = colorDifference(
-            pixelColor.red,
-            pixelColor.green,
-            pixelColor.blue,
-            color.red,
-            color.green,
-            color.blue
-        );
-
-        if (index === 0 || colorDiff < closestColorHash) {
-            closestColorHash = colorDiff;
-            closestColor = color;
-        }
-    });
-
-    return closestColor;
-}
-
-function colorDifference(r1: number, g1: number, b1: number, r2: number, g2: number, b2: number) {
-    let sumOfSquares = 0;
-
-    sumOfSquares += Math.pow(r1 - r2, 2);
-    sumOfSquares += Math.pow(g1 - g2, 2);
-    sumOfSquares += Math.pow(b1 - b2, 2);
-
-    return Math.sqrt(sumOfSquares);
-}
-
-function colorDifferenceByColorString(firstColorString: string, secondColorString: string) {
-    const firstColor = {
-        red: parseInt(firstColorString.toString().slice(0, 3), 10),
-        green: parseInt(firstColorString.toString().slice(3, 6), 10),
-        blue: parseInt(firstColorString.toString().slice(6, 9), 10)
-    }
-    const secondColor = {
-        red: parseInt(secondColorString.toString().slice(0, 3), 10),
-        green: parseInt(secondColorString.toString().slice(3, 6), 10),
-        blue: parseInt(secondColorString.toString().slice(6, 9), 10)
-    }
-
-    return colorDifference(
-        firstColor.red,
-        firstColor.green,
-        firstColor.blue,
-        secondColor.red,
-        secondColor.green,
-        secondColor.blue);
-}
-
-function getSuperPixelColorsFromIndex(
-    index: number,
-    pixelData: Uint8ClampedArray,
-    pixelWidth: number,
-    blockSize: number) {
-
-    const reds: number[] = [];
-    const greens: number[] = [];
-    const blues: number[] = [];
-
-    for (let bs = 0; bs < blockSize / 4; bs++) {
-        const lineOffset = index + pixelWidth * bs;
-        for (let ps = 0; ps < blockSize; ps += 4) {
-            const pixelOffset = lineOffset + ps;
-            reds.push(pixelData[pixelOffset]);
-            greens.push(pixelData[pixelOffset + 1]);
-            blues.push(pixelData[pixelOffset + 2]);
-        }
-    }
-    const avgRed = (reds.reduce((a, b) => a + b, 0) / blockSize) * (16 / blockSize);
-    const avgBlue = (blues.reduce((a, b) => a + b, 0) / blockSize) * (16 / blockSize);
-    const avgGreen = (greens.reduce((a, b) => a + b, 0) / blockSize) * (16 / blockSize);
+function colorObjectFromColorCode(colorCode: string): ColorObject {
     return {
-        red: parseInt(avgRed.toString(), 10),
-        green: parseInt(avgGreen.toString(), 10),
-        blue: parseInt(avgBlue.toString(), 10)
-    };
+        red: parseInt(colorCode.toString().slice(0, 3), 10),
+        green: parseInt(colorCode.toString().slice(3, 6), 10),
+        blue: parseInt(colorCode.toString().slice(6, 9), 10)
+    }
 }
